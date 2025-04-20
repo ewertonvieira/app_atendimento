@@ -51,7 +51,7 @@ Route::middleware(['auth', 'userMiddleware'])->group(function () {
 // Rotas para técnicos (Tecnico)
 Route::middleware(['auth', 'tecnicoMiddleware'])->prefix('tecnico')->name('tecnico.')->group(function () {
     // Dashboard do técnico
-    Route::get('/dashboard', [AtendimentosTecnicoController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [AtendimentosTecnicoController::class, 'dashboard'])->name('dashboard');
 
     // Listar atendimentos disponíveis
     Route::get('/atendimentos', [AtendimentosTecnicoController::class, 'index'])->name('atendimentos.index');

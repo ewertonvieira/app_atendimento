@@ -14,10 +14,7 @@ class AtendimentosTecnicoController extends Controller
      */
     public function index()
     {
-        // Obter atendimentos com status "pendente"
         $atendimentos = Atendimentos::where('status', 'pendente')->with('cliente')->get();
-
-        // Certifique-se de que o nome da view está correto
         return view('tecnico.index-atendimentos', compact('atendimentos'));
     }
 
@@ -26,12 +23,9 @@ class AtendimentosTecnicoController extends Controller
      */
     public function aceitarAtendimento($id)
     {
-        $tecnico = Auth::user(); // Técnico autenticado
-
-        // Encontrar o atendimento
+        $tecnico = Auth::user();
         $atendimento = Atendimentos::findOrFail($id);
 
-        // Atualizar o status e associar o técnico
         $atendimento->update([
             'status' => 'agendado',
             'tecnico_id' => $tecnico->id,
@@ -45,9 +39,8 @@ class AtendimentosTecnicoController extends Controller
      */
     public function atendimentosAceitos()
     {
-        // Obter atendimentos aceitos pelo técnico autenticado
         $atendimentos = Atendimentos::where('tecnico_id', Auth::id())
-            ->whereIn('status', ['agendado'])
+            ->where('status', 'agendado')
             ->with('cliente')
             ->get();
 
@@ -61,12 +54,10 @@ class AtendimentosTecnicoController extends Controller
     {
         $atendimento = Atendimentos::findOrFail($id);
 
-        // Verificar se o técnico autenticado é responsável pelo atendimento
         if ($atendimento->tecnico_id !== Auth::id()) {
             abort(403, 'Ação não autorizada.');
         }
 
-        // Atualizar o status do atendimento para "pendente" e remover o técnico associado
         $atendimento->update([
             'status' => 'pendente',
             'tecnico_id' => null,
@@ -82,15 +73,12 @@ class AtendimentosTecnicoController extends Controller
     {
         $atendimento = Atendimentos::findOrFail($id);
 
-        // Verificar se o técnico autenticado é responsável pelo atendimento
         if ($atendimento->tecnico_id !== Auth::id()) {
             abort(403, 'Ação não autorizada.');
         }
 
-        // Atualizar o status do atendimento para "concluído"
         $atendimento->update(['status' => 'concluido']);
 
-        // Redirecionar para a página de criação de pagamento
         return redirect()->route('tecnico.create-pagamento', ['id' => $atendimento->id]);
     }
 
@@ -101,27 +89,43 @@ class AtendimentosTecnicoController extends Controller
     {
         $atendimento = Atendimentos::findOrFail($id);
 
-        // Verificar se o técnico autenticado é responsável pelo atendimento
         if ($atendimento->tecnico_id !== Auth::id()) {
             abort(403, 'Ação não autorizada.');
         }
 
-        // Validar o valor do pagamento
         $request->validate([
             'valor' => 'required|string',
         ]);
 
-        // Converter o valor para o formato americano
         $valor = str_replace(['R$', '.', ','], ['', '', '.'], $request->valor);
 
-        // Criar o registro de pagamento
         $atendimento->pagamentos()->create([
             'valor' => $valor,
             'status' => 'pendente',
-            'data_pagamento' => null, // Cliente definirá posteriormente
-            'metodo_pagamento' => null, // Cliente definirá posteriormente
+            'data_pagamento' => null,
+            'metodo_pagamento' => null,
         ]);
 
         return redirect()->route('tecnico.dashboard')->with('success', 'Pagamento registrado com sucesso!');
+    }
+
+    /**
+     * Exibir o dashboard do técnico.
+     */
+    public function dashboard()
+    {
+        $tecnicoId = Auth::id();
+
+        $atendimentosDisponiveis = Atendimentos::where('status', 'pendente')->count();
+        $atendimentosAceitos = Atendimentos::where('tecnico_id', $tecnicoId)
+            ->where('status', 'agendado')
+            ->count();
+        $valorTotalPagamentos = Atendimentos::where('tecnico_id', $tecnicoId)
+            ->where('atendimentos.status', 'concluido')
+            ->whereMonth('atendimentos.updated_at', now()->month)
+            ->join('pagamentos', 'atendimentos.id', '=', 'pagamentos.atendimento_id')
+            ->sum('pagamentos.valor');
+
+        return view('tecnico.dashboard', compact('atendimentosDisponiveis', 'atendimentosAceitos', 'valorTotalPagamentos'));
     }
 }
