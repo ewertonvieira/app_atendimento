@@ -72,6 +72,23 @@
                         </div>
                     </div>
 
+                    {{-- CPF e Data de Nascimento --}}
+                    <div class="grid grid-cols-2 gap-4">
+                        {{-- CPF --}}
+                        <div>
+                            <label for="cpf" class="block text-sm font-medium text-gray-700">CPF</label>
+                            <input type="text" name="cpf" id="cpf" value="{{ old('cpf', $user->cpf) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
+                        </div>
+
+                        {{-- Data de Nascimento --}}
+                        <div>
+                            <label for="data_nascimento" class="block text-sm font-medium text-gray-700">Data de Nascimento</label>
+                            <input type="date" name="data_nascimento" id="data_nascimento" 
+                                   value="{{ old('data_nascimento', $user->data_nascimento ? $user->data_nascimento->format('Y-m-d') : '') }}" 
+                                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                    </div>
+
                     {{-- Botão de Salvar --}}
                     <div class="flex justify-end">
                         <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-white uppercase tracking-widest hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">

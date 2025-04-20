@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -36,7 +37,7 @@ class UserController extends Controller
 
         return view('user.update-profile', [
             'user' => $user,
-            'request' => $request, // Passa o $request para a view
+            'request' => $request,
         ]);
     }
 
@@ -50,32 +51,49 @@ class UserController extends Controller
         // Validação dos campos
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'rua' => 'required|string|max:255',
-            'bairro' => 'required|string|max:255',
-            'cep' => 'required|string|max:10',
-            'estado' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:15',
-            'cpf' => 'required|string|max:14',
-            'data_nascimento' => 'nullable|date',
+            'email' => 'required|email|max:255',
+            'phone_number' => 'nullable|string|max:15',
+            'rua' => 'nullable|string|max:255',
+            'bairro' => 'nullable|string|max:255',
+            'cep' => 'nullable|string|max:10',
+            'estado' => 'nullable|string|max:2',
+            'cpf' => 'nullable|string|max:14',
+            'data_nascimento' => 'nullable|date', // Validação para Data de Nascimento
             'avatar' => 'nullable|image|max:2048', // Validação para upload de imagem
         ]);
 
+        \Log::info('Dados validados recebidos:', $validatedData);
+
         // Atualizar os dados do usuário
-        $data = $request->only('name', 'email', 'rua', 'bairro', 'cep', 'estado', 'phone_number', 'cpf', 'data_nascimento');
+        $data = $request->only(
+            'name',
+            'email',
+            'phone_number',
+            'rua',
+            'bairro',
+            'cep',
+            'estado',
+            'cpf'
+        );
+
+        // Converter a data de nascimento para o formato correto
+        if ($request->filled('data_nascimento')) {
+            $data['data_nascimento'] = Carbon::createFromFormat('Y-m-d', $request->data_nascimento)->format('Y-m-d');
+        }
 
         // Verificar se há upload de avatar
         if ($request->hasFile('avatar')) {
-            // Remover o avatar antigo, se existir
-            if ($user->avatar && Storage::exists('public/' . $user->avatar)) {
-                Storage::delete('public/' . $user->avatar);
+            // Excluir avatar antigo, se existir
+            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+                Storage::disk('public')->delete($user->avatar);
             }
 
-            // Salvar o novo avatar
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $data['avatar'] = $avatarPath;
+            // Salvar novo avatar
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $data['avatar'] = $path; // Salvar o caminho no banco de dados
         }
 
+        // Atualizar o usuário
         $user->update($data);
 
         return redirect()->route('user.edit-profile')->with('success', 'Perfil atualizado com sucesso!');
@@ -152,9 +170,104 @@ class UserController extends Controller
     /**
      * Exibe o formulário de criação do perfil do usuário.
      */
-    public function createProfile()
+    public function showCreateProfileForm()
     {
-        $user = Auth::user(); // Obtém o usuário autenticado
-        return view('user.create-profile', compact('user')); // Certifique-se de que o nome da view está correto
+        return view('user.create-profile'); // Exibe o formulário de criação de perfil
+    }
+
+    /**
+     * Cria o perfil do usuário.
+     */
+    public function createProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        // Validação dos campos
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'rua' => 'required|string|max:255',
+            'bairro' => 'required|string|max:255',
+            'cep' => 'required|string|max:10',
+            'estado' => 'required|string|max:2',
+            'phone_number' => 'required|string|max:15',
+            'cpf' => 'required|string|max:14',
+            'data_nascimento' => 'nullable|date',
+            'avatar' => 'nullable|image|max:2048',
+        ]);
+
+        // Atualizar os dados do usuário
+        $data = $request->only(
+            'name',
+            'email',
+            'rua',
+            'bairro',
+            'cep',
+            'estado',
+            'phone_number',
+            'cpf',
+            'data_nascimento'
+        );
+
+        // Verificar se há upload de avatar
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $data['avatar'] = $path;
+        }
+
+        $user->update($data);
+
+        return redirect()->route('user.dashboard')->with('success', 'Perfil criado com sucesso!');
+    }
+
+    /**
+     * Armazena o perfil do usuário.
+     */
+    public function storeProfile(Request $request)
+    {
+        // Validação dos campos
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8|confirmed', // Validação para senha
+            'rua' => 'required|string|max:255',
+            'bairro' => 'required|string|max:255',
+            'cep' => 'required|string|max:10',
+            'estado' => 'required|string|max:2',
+            'phone_number' => 'required|string|max:15',
+            'cpf' => 'required|string|max:14|unique:users,cpf',
+            'data_nascimento' => 'nullable|date',
+            'avatar' => 'nullable|image|max:2048',
+        ]);
+
+        // Criar o novo usuário
+        $data = $request->only(
+            'name',
+            'email',
+            'rua',
+            'bairro',
+            'cep',
+            'estado',
+            'phone_number',
+            'cpf',
+            'data_nascimento'
+        );
+
+        // Adicionar o tipo de usuário
+        $data['usertype'] = 'user';
+
+        // Criptografar a senha
+        $data['password'] = bcrypt($request->password);
+
+        // Verificar se há upload de avatar
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $data['avatar'] = $path;
+        }
+
+        // Salvar o usuário no banco de dados
+        User::create($data);
+
+        return redirect()->route('user.create-profile')->with('success', 'Usuário criado com sucesso!');
     }
 }

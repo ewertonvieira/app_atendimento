@@ -48,6 +48,15 @@ Route::middleware(['auth', 'userMiddleware'])->group(function () {
     Route::put('/user/profile', [UserController::class, 'updateProfile'])->name('user.update-profile');
 });
 
+// Rotas para criação de perfil
+Route::middleware(['auth'])->group(function () {
+    // Rota para exibir o formulário de criação de perfil
+    Route::get('/user/create-profile', [UserController::class, 'showCreateProfileForm'])->name('user.create-profile');
+
+    // Rota para salvar o novo perfil
+    Route::post('/user/create-profile', [UserController::class, 'storeProfile'])->name('user.store-profile');
+});
+
 // Rotas para técnicos (Tecnico)
 Route::middleware(['auth', 'tecnicoMiddleware'])->prefix('tecnico')->name('tecnico.')->group(function () {
     // Dashboard do técnico

@@ -25,7 +25,9 @@
                         {{-- Informações do Cliente --}}
                         <div class="mt-4">
                             <h4 class="text-md font-semibold text-gray-800">Informações do Cliente</h4>
-                            <p class="text-sm text-gray-600"><strong>Nome:</strong> {{ $atendimento->cliente->name }}</p>
+                            <p class="text-sm text-gray-600">
+                                Cliente: {{ $atendimento->cliente ? $atendimento->cliente->name : 'Cliente não encontrado' }}
+                            </p>
                             <p class="text-sm text-gray-600"><strong>Email:</strong> {{ $atendimento->cliente->email }}</p>
                             <p class="text-sm text-gray-600"><strong>Telefone:</strong> {{ $atendimento->cliente->phone_number }}</p>
                             <p class="text-sm text-gray-600"><strong>Rua:</strong> {{ $atendimento->cliente->rua }}</p>

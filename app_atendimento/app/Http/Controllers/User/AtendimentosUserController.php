@@ -25,8 +25,10 @@ class AtendimentosUserController extends Controller
             ]);
         }
 
-        // Obter os atendimentos associados ao usuário autenticado
-        $atendimentos = Atendimentos::where('cliente_id', $user->id)->get();
+        // Obter os atendimentos associados ao usuário autenticado e carregar o relacionamento 'cliente'
+        $atendimentos = Atendimentos::where('cliente_id', $user->id)
+            ->with('cliente') // Carrega o relacionamento 'cliente'
+            ->get();
 
         // Retornar a view com os atendimentos
         return view('user.index-atendimentos', compact('atendimentos'));
