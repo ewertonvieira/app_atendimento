@@ -26,7 +26,7 @@ class Atendimentos extends Model
     /**
      * Relacionamento: Um atendimento pertence a um cliente.
      */
-    public function cliente()
+    public function cliente(): BelongsTo
     {
         return $this->belongsTo(User::class, 'cliente_id');
     }

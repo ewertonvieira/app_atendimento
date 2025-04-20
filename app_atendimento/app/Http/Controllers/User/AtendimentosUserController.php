@@ -18,8 +18,8 @@ class AtendimentosUserController extends Controller
     {
         $user = Auth::user(); // Obtém o usuário autenticado
 
-        // Obter os atendimentos diretamente pelo relacionamento
-        $atendimentos = $user->atendimentosComoCliente;
+        // Filtrar os atendimentos pelo cliente autenticado
+        $atendimentos = Atendimentos::where('cliente_id', $user->id)->get();
 
         return view('user.index-atendimentos', compact('atendimentos'));
     }
@@ -73,7 +73,17 @@ class AtendimentosUserController extends Controller
      */
     public function show($id)
     {
-        // Código para exibir um atendimento específico
+        $user = Auth::user(); // Obtém o usuário autenticado
+
+        // Encontrar o atendimento pelo ID
+        $atendimento = Atendimentos::findOrFail($id);
+
+        // Verificar se o atendimento pertence ao usuário autenticado
+        if ($atendimento->cliente_id !== $user->id) {
+            abort(403, 'Acesso negado.');
+        }
+
+        return view('user.show-atendimento', compact('atendimento'));
     }
 
     /**
