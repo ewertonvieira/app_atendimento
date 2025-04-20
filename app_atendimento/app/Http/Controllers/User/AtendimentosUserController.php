@@ -18,19 +18,9 @@ class AtendimentosUserController extends Controller
     {
         $user = Auth::user(); // Obtém o usuário autenticado
 
-        // Verificar se o usuário possui os campos obrigatórios preenchidos
-        if (!$user->rua || !$user->bairro || !$user->cep || !$user->estado || !$user->phone_number || !$user->cpf) {
-            return redirect()->route('user.edit-profile')->withErrors([
-                'user_incomplete' => 'Por favor, preencha todos os campos do seu perfil antes de acessar seus atendimentos.',
-            ]);
-        }
+        // Obter os atendimentos diretamente pelo relacionamento
+        $atendimentos = $user->atendimentosComoCliente;
 
-        // Obter os atendimentos associados ao usuário autenticado e carregar o relacionamento 'cliente'
-        $atendimentos = Atendimentos::where('cliente_id', $user->id)
-            ->with('cliente') // Carrega o relacionamento 'cliente'
-            ->get();
-
-        // Retornar a view com os atendimentos
         return view('user.index-atendimentos', compact('atendimentos'));
     }
 

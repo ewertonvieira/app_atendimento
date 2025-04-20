@@ -62,7 +62,7 @@ class UserController extends Controller
             'avatar' => 'nullable|image|max:2048', // Validação para upload de imagem
         ]);
 
-        \Log::info('Dados validados recebidos:', $validatedData);
+        \Log::info('Dados validados recebidos:', $request->all());
 
         // Atualizar os dados do usuário
         $data = $request->only(
@@ -173,101 +173,5 @@ class UserController extends Controller
     public function showCreateProfileForm()
     {
         return view('user.create-profile'); // Exibe o formulário de criação de perfil
-    }
-
-    /**
-     * Cria o perfil do usuário.
-     */
-    public function createProfile(Request $request)
-    {
-        $user = Auth::user();
-
-        // Validação dos campos
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'rua' => 'required|string|max:255',
-            'bairro' => 'required|string|max:255',
-            'cep' => 'required|string|max:10',
-            'estado' => 'required|string|max:2',
-            'phone_number' => 'required|string|max:15',
-            'cpf' => 'required|string|max:14',
-            'data_nascimento' => 'nullable|date',
-            'avatar' => 'nullable|image|max:2048',
-        ]);
-
-        // Atualizar os dados do usuário
-        $data = $request->only(
-            'name',
-            'email',
-            'rua',
-            'bairro',
-            'cep',
-            'estado',
-            'phone_number',
-            'cpf',
-            'data_nascimento'
-        );
-
-        // Verificar se há upload de avatar
-        if ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $data['avatar'] = $path;
-        }
-
-        $user->update($data);
-
-        return redirect()->route('user.dashboard')->with('success', 'Perfil criado com sucesso!');
-    }
-
-    /**
-     * Armazena o perfil do usuário.
-     */
-    public function storeProfile(Request $request)
-    {
-        // Validação dos campos
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8|confirmed', // Validação para senha
-            'rua' => 'required|string|max:255',
-            'bairro' => 'required|string|max:255',
-            'cep' => 'required|string|max:10',
-            'estado' => 'required|string|max:2',
-            'phone_number' => 'required|string|max:15',
-            'cpf' => 'required|string|max:14|unique:users,cpf',
-            'data_nascimento' => 'nullable|date',
-            'avatar' => 'nullable|image|max:2048',
-        ]);
-
-        // Criar o novo usuário
-        $data = $request->only(
-            'name',
-            'email',
-            'rua',
-            'bairro',
-            'cep',
-            'estado',
-            'phone_number',
-            'cpf',
-            'data_nascimento'
-        );
-
-        // Adicionar o tipo de usuário
-        $data['usertype'] = 'user';
-
-        // Criptografar a senha
-        $data['password'] = bcrypt($request->password);
-
-        // Verificar se há upload de avatar
-        if ($request->hasFile('avatar')) {
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $data['avatar'] = $path;
-        }
-
-        // Salvar o usuário no banco de dados
-        User::create($data);
-
-        return redirect()->route('user.create-profile')->with('success', 'Usuário criado com sucesso!');
     }
 }

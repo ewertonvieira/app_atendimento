@@ -32,8 +32,8 @@
                             <a href="{{ route('login') }}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
                                 Login
                             </a>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                            @if (Route::has('custom.register.create'))
+                                <a href="{{ route('custom.register.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                                     Registrar
                                 </a>
                             @endif

@@ -8,6 +8,7 @@ use App\Http\Controllers\Atendimentos\AtendimentosController;
 use App\Http\Controllers\Pagamentos\PagamentosController;
 use App\Http\Controllers\User\AtendimentosUserController;
 use App\Http\Controllers\Tecnico\AtendimentosTecnicoController;
+use App\Http\Controllers\Auth\CustomUserRegistrationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,7 +24,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/user/create-profile', [UserController::class, 'showCreateProfileForm'])->name('user.create-profile');
+
+    // Rota para salvar o novo perfil
+    Route::post('/user/create-profile', [UserController::class, 'storeProfile'])->name('user.create-profile');
 });
+
+Route::get('/custom-register', [CustomUserRegistrationController::class, 'create'])->name('custom.register.create');
+Route::post('/custom-register', [CustomUserRegistrationController::class, 'store'])->name('custom.register.store');
 
 require __DIR__.'/auth.php';
 
@@ -48,14 +56,6 @@ Route::middleware(['auth', 'userMiddleware'])->group(function () {
     Route::put('/user/profile', [UserController::class, 'updateProfile'])->name('user.update-profile');
 });
 
-// Rotas para criação de perfil
-Route::middleware(['auth'])->group(function () {
-    // Rota para exibir o formulário de criação de perfil
-    Route::get('/user/create-profile', [UserController::class, 'showCreateProfileForm'])->name('user.create-profile');
-
-    // Rota para salvar o novo perfil
-    Route::post('/user/create-profile', [UserController::class, 'storeProfile'])->name('user.store-profile');
-});
 
 // Rotas para técnicos (Tecnico)
 Route::middleware(['auth', 'tecnicoMiddleware'])->prefix('tecnico')->name('tecnico.')->group(function () {
