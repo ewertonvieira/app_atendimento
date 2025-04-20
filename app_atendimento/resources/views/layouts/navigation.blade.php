@@ -17,28 +17,21 @@
                             {{ __('Área do Cliente') }}
                         </x-nav-link>
                         <x-nav-link :href="route('atendimentos.create')" :active="request()->routeIs('atendimentos.create')">
-                            {{ __('Criar Tickets') }}
+                            {{ __('Criar Atendimento') }}
                         </x-nav-link>
                         <x-nav-link :href="route('atendimentos.index')" :active="request()->routeIs('atendimentos.index')">
-                            {{ __('Tickets') }}
+                            {{ __('Meus Atendimentos') }}
                         </x-nav-link>
-
-                        <x-nav-link :href="route('user.dashboard')" :active="request()->routeIs('user.dashboard')">
-                            {{ __('Faturas') }}
+                        <x-nav-link :href="route('user.edit-profile')" :active="request()->routeIs('user.edit-profile')">
+                            {{ __('Editar Perfil') }}
                         </x-nav-link>
-
-                        <x-nav-link :href="route('user.edit-profile')" :active="request()->routeIs('user.dashboard')">
-                            {{ __('Perfil') }}
-                        </x-nav-link>
-
                     @elseif (Auth::user()->usertype === 'admin')
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                             {{ __('Admin Dashboard') }}
                         </x-nav-link>
-
                     @elseif (Auth::user()->usertype === 'tecnico')
                         <x-nav-link :href="route('tecnico.dashboard')" :active="request()->routeIs('tecnico.dashboard')">
-                            {{ __('Technician Dashboard') }}
+                            {{ __('Área do Técnico') }}
                         </x-nav-link>
                     @endif
                 </div>
@@ -60,8 +53,8 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                        <x-dropdown-link :href="route('user.edit-profile')">
+                            {{ __('Perfil') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -71,7 +64,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('Sair') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -98,16 +91,13 @@
                     {{ __('Área do Cliente') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('atendimentos.create')" :active="request()->routeIs('atendimentos.create')">
-                    {{ __('Criar Tickets') }}
+                    {{ __('Criar Atendimento') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('atendimentos.index')" :active="request()->routeIs('atendimentos.index')">
-                    {{ __('Tickets') }}
+                    {{ __('Meus Atendimentos') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('user.dashboard')" :active="request()->routeIs('user.dashboard')">
-                    {{ __('Faturas') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('user.edit-profile')" :active="request()->routeIs('user.dashboard')">
-                    {{ __('Perfil') }}
+                <x-responsive-nav-link :href="route('user.edit-profile')" :active="request()->routeIs('user.edit-profile')">
+                    {{ __('Editar Perfil') }}
                 </x-responsive-nav-link>
             @elseif (Auth::user()->usertype === 'admin')
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
@@ -115,7 +105,7 @@
                 </x-responsive-nav-link>
             @elseif (Auth::user()->usertype === 'tecnico')
                 <x-responsive-nav-link :href="route('tecnico.dashboard')" :active="request()->routeIs('tecnico.dashboard')">
-                    {{ __('Technician Dashboard') }}
+                    {{ __('Área do Técnico') }}
                 </x-responsive-nav-link>
             @endif
         </div>
