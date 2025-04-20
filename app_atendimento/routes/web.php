@@ -7,6 +7,7 @@ use App\Http\Controllers\Tecnico\TecnicoController;
 use App\Http\Controllers\Atendimentos\AtendimentosController;
 use App\Http\Controllers\Pagamentos\PagamentosController;
 use App\Http\Controllers\User\AtendimentosUserController;
+use App\Http\Controllers\Tecnico\AtendimentosTecnicoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,7 +36,7 @@ Route::middleware(['auth', 'userMiddleware'])->group(function () {
     Route::get('/user/atendimentos', [AtendimentosUserController::class, 'index'])->name('atendimentos.index');
     Route::get('/user/atendimentos/create', [AtendimentosUserController::class, 'create'])->name('atendimentos.create');
     Route::post('/user/atendimentos', [AtendimentosUserController::class, 'store'])->name('atendimentos.store');
-    Route::put('/user/atendimentos/{id}', [AtendimentosUserController::class, 'update'])->name('atendimentos.update'); // Adicionada a rota update
+    Route::put('/user/atendimentos/{id}', [AtendimentosUserController::class, 'update'])->name('atendimentos.update');
     Route::delete('/user/atendimentos/{id}', [AtendimentosUserController::class, 'destroy'])->name('atendimentos.destroy');
 
     // Rotas de pagamentos
@@ -45,18 +46,35 @@ Route::middleware(['auth', 'userMiddleware'])->group(function () {
     // Rotas de perfil do usuário
     Route::get('/user/profile', [UserController::class, 'editProfile'])->name('user.edit-profile');
     Route::put('/user/profile', [UserController::class, 'updateProfile'])->name('user.update-profile');
-
-    // Rotas adicionais para edição de perfil do usuário
-    Route::get('/user/edit-profile', [UserController::class, 'editProfile'])->name('user.edit-profile');
-    Route::put('/user/update', [UserController::class, 'update'])->name('user.update');
 });
 
 // Rotas para técnicos (Tecnico)
-Route::middleware(['auth', 'tecnicoMiddleware'])->group(function () {
-    Route::get('/tecnico/dashboard', [TecnicoController::class, 'index'])->name('tecnico.dashboard');
-    Route::get('/tecnico/atendimentos', [AtendimentosController::class, 'index'])->name('tecnico.atendimentos.index');
-    Route::post('/tecnico/atendimentos/{id}/aceitar', [AtendimentosController::class, 'aceitar'])->name('tecnico.atendimentos.aceitar');
-    Route::post('/tecnico/atendimentos/{id}/executar', [AtendimentosController::class, 'executar'])->name('tecnico.atendimentos.executar');
+Route::middleware(['auth', 'tecnicoMiddleware'])->prefix('tecnico')->name('tecnico.')->group(function () {
+    // Dashboard do técnico
+    Route::get('/dashboard', [AtendimentosTecnicoController::class, 'index'])->name('dashboard');
+
+    // Listar atendimentos disponíveis
+    Route::get('/atendimentos', [AtendimentosTecnicoController::class, 'index'])->name('atendimentos.index');
+
+    // Listar atendimentos aceitos
+    Route::get('/atendimentos-aceitos', [AtendimentosTecnicoController::class, 'atendimentosAceitos'])->name('atendimentos.aceitos');
+
+    // Aceitar atendimento
+    Route::post('/atendimentos/{id}/aceitar', [AtendimentosTecnicoController::class, 'aceitarAtendimento'])->name('atendimentos.aceitar');
+
+    // Cancelar atendimento
+    Route::put('/atendimentos/{id}/cancelar', [AtendimentosTecnicoController::class, 'cancelarAtendimento'])->name('atendimentos.cancelar');
+
+    // Concluir atendimento
+    Route::post('/atendimentos/{id}/concluir', [AtendimentosTecnicoController::class, 'concluirAtendimento'])->name('atendimentos.concluir');
+
+    // Página de criação de pagamento
+    Route::get('/create-pagamento/{id}', function ($id) {
+        return view('tecnico.create-pagamento', ['id' => $id]);
+    })->name('create-pagamento');
+
+    // Salvar pagamento
+    Route::post('/create-pagamento/{id}', [AtendimentosTecnicoController::class, 'storePagamento'])->name('store-pagamento');
 });
 
 // Rotas para administradores (Admin)
@@ -65,11 +83,4 @@ Route::middleware(['auth', 'adminMiddleware'])->group(function () {
     Route::resource('users', AdminController::class); // CRUD de usuários
     Route::resource('atendimentos', AtendimentosController::class)->only(['index', 'show', 'destroy']);
     Route::resource('pagamentos', PagamentosController::class)->only(['index', 'show', 'destroy']);
-});
-
-// Rotas adicionais para usuários autenticados
-Route::middleware(['auth'])->group(function () {
-    Route::get('/user/edit-profile', [UserController::class, 'editProfile'])->name('user.edit-profile');
-    Route::post('/user/update-password', [UserController::class, 'updatePassword'])->name('password.store');
-    Route::put('/user/update', [UserController::class, 'update'])->name('user.update');
 });

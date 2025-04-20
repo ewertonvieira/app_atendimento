@@ -33,6 +33,12 @@
                         <x-nav-link :href="route('tecnico.dashboard')" :active="request()->routeIs('tecnico.dashboard')">
                             {{ __('Área do Técnico') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('tecnico.atendimentos.index')" :active="request()->routeIs('tecnico.atendimentos.index')">
+                            {{ __('Atendimentos Disponíveis') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('tecnico.atendimentos.aceitos')" :active="request()->routeIs('tecnico.atendimentos.aceitos')">
+                            {{ __('Atendimentos Aceitos') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -106,6 +112,12 @@
             @elseif (Auth::user()->usertype === 'tecnico')
                 <x-responsive-nav-link :href="route('tecnico.dashboard')" :active="request()->routeIs('tecnico.dashboard')">
                     {{ __('Área do Técnico') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('tecnico.atendimentos.index')" :active="request()->routeIs('tecnico.atendimentos.index')">
+                    {{ __('Atendimentos Disponíveis') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('tecnico.atendimentos.aceitos')" :active="request()->routeIs('tecnico.atendimentos.aceitos')">
+                    {{ __('Atendimentos Aceitos') }}
                 </x-responsive-nav-link>
             @endif
         </div>
