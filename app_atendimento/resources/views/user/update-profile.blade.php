@@ -16,7 +16,7 @@
                 @endif
 
                 {{-- Formulário para atualizar informações --}}
-                <form action="{{ route('user.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <form action="{{ route('user.update-profile') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
                     @method('PUT')
 
