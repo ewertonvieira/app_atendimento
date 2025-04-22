@@ -13,7 +13,10 @@ class AtendimentosController extends Controller
     public function index()
     {
         $atendimentos = Atendimentos::with(['cliente', 'tecnico'])->get();
-        return view('admin.atendimentos.index', compact('atendimentos'));
+        $clientes = User::where('usertype', 'user')->get(); // Carregar clientes
+        $tecnicos = User::where('usertype', 'tecnico')->get(); // Carregar técnicos
+
+        return view('admin.atendimentos.index', compact('atendimentos', 'clientes', 'tecnicos'));
     }
 
     // Show a single atendimento
@@ -31,8 +34,8 @@ class AtendimentosController extends Controller
     // Create a new atendimento
     public function create()
     {
-        $clientes = User::where('role', 'cliente')->get();
-        $tecnicos = User::where('role', 'tecnico')->get();
+        $clientes = User::where('usertype', 'user')->get();
+        $tecnicos = User::where('usertype', 'tecnico')->get();
         return view('admin.atendimentos.create', compact('clientes', 'tecnicos'));
     }
 
@@ -71,8 +74,8 @@ class AtendimentosController extends Controller
             return redirect()->route('admin.atendimentos.index')->with('error', 'Atendimento não encontrado.');
         }
 
-        $clientes = User::where('role', 'cliente')->get();
-        $tecnicos = User::where('role', 'tecnico')->get();
+        $clientes = User::where('usertype', 'cliente')->get();
+        $tecnicos = User::where('usertype', 'tecnico')->get();
 
         return view('admin.atendimentos.edit', compact('atendimento', 'clientes', 'tecnicos'));
     }
