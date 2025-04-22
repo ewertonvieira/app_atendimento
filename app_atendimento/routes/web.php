@@ -89,7 +89,16 @@ Route::middleware(['auth', 'tecnicoMiddleware'])->prefix('tecnico')->name('tecni
 // Rotas para administradores (Admin)
 Route::middleware(['auth', 'adminMiddleware'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::resource('users', AdminController::class); // CRUD de usuários
-    Route::resource('atendimentos', AtendimentosController::class)->only(['index', 'show', 'destroy']);
-    Route::resource('pagamentos', PagamentosController::class)->only(['index', 'show', 'destroy']);
+
+    // Rotas para o CRUD de Atendimentos
+    Route::prefix('admin/atendimentos')->name('admin.atendimentos.')->group(function () {
+        Route::get('/', [AtendimentosController::class, 'index'])->name('index'); // Listar atendimentos
+        Route::get('/create', [AtendimentosController::class, 'create'])->name('create'); // Formulário de criação
+        Route::post('/', [AtendimentosController::class, 'store'])->name('store'); // Salvar novo atendimento
+        Route::get('/{id}', [AtendimentosController::class, 'show'])->name('show'); // Visualizar atendimento
+        Route::get('/{id}/edit', [AtendimentosController::class, 'edit'])->name('edit'); // Formulário de edição
+        Route::put('/{id}', [AtendimentosController::class, 'update'])->name('update'); // Atualizar atendimento
+        Route::delete('/{id}', [AtendimentosController::class, 'destroy'])->name('destroy'); // Excluir atendimento
+        Route::delete('/bulk-delete', [AtendimentosController::class, 'bulkDelete'])->name('bulk-delete'); // Exclusão em massa
+    });
 });

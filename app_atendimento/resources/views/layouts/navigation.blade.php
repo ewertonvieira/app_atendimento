@@ -29,6 +29,9 @@
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                             {{ __('Admin Dashboard') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('admin.atendimentos.index')" :active="request()->routeIs('admin.atendimentos.index')">
+                            {{ __('Atendimentos') }}
+                        </x-nav-link>
                     @elseif (Auth::user()->usertype === 'tecnico')
                         <x-nav-link :href="route('tecnico.dashboard')" :active="request()->routeIs('tecnico.dashboard')">
                             {{ __('Área do Técnico') }}
@@ -108,6 +111,9 @@
             @elseif (Auth::user()->usertype === 'admin')
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                     {{ __('Admin Dashboard') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.atendimentos.index')" :active="request()->routeIs('admin.atendimentos.index')">
+                    {{ __('Atendimentos') }}
                 </x-responsive-nav-link>
             @elseif (Auth::user()->usertype === 'tecnico')
                 <x-responsive-nav-link :href="route('tecnico.dashboard')" :active="request()->routeIs('tecnico.dashboard')">
