@@ -36,25 +36,17 @@ class AtendimentosController extends Controller
     public function create()
     {
         $clientes = User::where('usertype', 'user')->get();
-        $tecnicos = User::where('usertype', 'tecnico')->get();
-        return view('admin.atendimentos.create', compact('clientes', 'tecnicos'));
+        return view('admin.atendimentos.create', compact('clientes'));
     }
 
     public function store(Request $request)
     {
         $validatedData = $request->validate([
             'cliente_id' => 'required|exists:users,id',
-            'tecnico_id' => 'required|exists:users,id',
             'descricao' => 'nullable|string',
             'data_disponivel' => 'required|date',
             'hora_disponivel' => 'required',
-            'status' => 'required|string',
-            'data_agendada' => 'nullable|date',
-            'valor_comissao' => 'nullable|numeric',
             'foto' => 'nullable|image',
-            'prioridade' => 'nullable|string',
-            'feedback_cliente' => 'nullable|string',
-            'tempo_estimado' => 'nullable|string',
         ]);
 
         if ($request->hasFile('foto')) {

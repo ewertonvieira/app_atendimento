@@ -17,11 +17,10 @@
                             class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 hidden">
                         Excluir Selecionados
                     </button>
-
-                    <button onclick="openModal()" 
+                    <a href="{{ route('admin.atendimentos.create') }}" 
                         class="px-5 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
                         Criar Novo Registro
-                    </button>
+                    </a>
                 </div>
                 <!-- Contêiner para barra de rolagem horizontal -->
                 <div class="overflow-x-auto">
