@@ -45,7 +45,7 @@
                                     <td class="border border-gray-300 px-4 py-2">
                                         <input type="checkbox" class="select-item" value="{{ $atendimento->id }}">
                                     </td>
-                                    <td class="border border-gray-300 px-4 py-2 truncate">
+                                    <td class="border border-gray-300 px-4 py-2 truncate" style="max-width: 140px;">
                                         {{ $atendimento->cliente ? $atendimento->cliente->name : 'N/A' }}
                                     </td>
                                     <td class="border border-gray-300 px-4 py-2 truncate">
@@ -71,10 +71,25 @@
                                     </td>
                                     <td class="border border-gray-300 px-4 py-2 text-center">
                                         <!-- Botão Visualizar -->
-                                        <a href="{{ route('admin.atendimentos.show', $atendimento->id) }}" 
-                                           class="px-2 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 inline-block">
+                                        <button onclick="openModal({
+                                            cliente: '{{ $atendimento->cliente ? $atendimento->cliente->name : 'Null' }}',
+                                            tecnico: '{{ $atendimento->tecnico ? $atendimento->tecnico->name : 'Null' }}',
+                                            descricao: '{{ $atendimento->descricao ?? 'Null' }}',
+                                            rua: '{{ $atendimento->cliente ? $atendimento->cliente->rua : 'Null' }}',
+                                            bairro: '{{ $atendimento->cliente ? $atendimento->cliente->bairro : 'Null' }}',
+                                            cep: '{{ $atendimento->cliente ? $atendimento->cliente->cep : 'Null' }}',
+                                            estado: '{{ $atendimento->cliente ? $atendimento->cliente->estado : 'Null' }}',
+                                            telefone: '{{ $atendimento->cliente ? $atendimento->cliente->phone_number : 'Null' }}',
+                                            cpf: '{{ $atendimento->cliente ? $atendimento->cliente->cpf : 'Null' }}',
+                                            data_disponivel: '{{ $atendimento->data_disponivel ?? 'Null' }}',
+                                            hora_disponivel: '{{ $atendimento->hora_disponivel ?? 'Null' }}',
+                                            status: '{{ $atendimento->status ?? 'Null' }}',
+                                            foto: '{{ $atendimento->foto ?? null }}',
+                                            feedback_cliente: '{{ $atendimento->feedback_cliente ?? 'Null' }}'
+                                        })" 
+                                        class="px-2 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 inline-block">
                                             Ver
-                                        </a>
+                                        </button>
 
                                         <!-- Botão Editar -->
                                         <a href="{{ route('admin.atendimentos.edit', $atendimento->id) }}" 
@@ -93,13 +108,142 @@
                         </tbody>
                     </table>
                 </div>
-                <!-- Fim do contêiner para barra de rolagem horizontal -->
             @endif
         </div>
     </div>
 </div>
 
+<!-- Adicionando Modal -->
+
+<div id="infoModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg shadow-lg w-3/4 max-w-4xl">
+        <div class="p-4 border-b flex justify-between items-center">
+            <h3 class="text-lg font-semibold">Detalhes do Atendimento</h3>
+            <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">&times;</button>
+        </div>
+        <div class="p-6">
+            <!-- Informações do Atendimento -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Cliente -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Cliente</label>
+                    <p id="modal-cliente" class="text-gray-900">Null</p>
+                </div>
+
+                <!-- Técnico -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Técnico</label>
+                    <p id="modal-tecnico" class="text-gray-900">Null</p>
+                </div>
+
+                <!-- Descrição -->
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Descrição</label>
+                    <p id="modal-descricao" class="text-gray-900">Null</p>
+                </div>
+
+                <!-- Rua -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Rua</label>
+                    <p id="modal-rua" class="text-gray-900">Null</p>
+                </div>
+
+                <!-- Bairro -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Bairro</label>
+                    <p id="modal-bairro" class="text-gray-900">Null</p>
+                </div>
+
+                <!-- CEP -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">CEP</label>
+                    <p id="modal-cep" class="text-gray-900">Null</p>
+                </div>
+
+                <!-- Estado -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Estado</label>
+                    <p id="modal-estado" class="text-gray-900">Null</p>
+                </div>
+
+                <!-- Telefone -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Telefone</label>
+                    <p id="modal-telefone" class="text-gray-900">Null</p>
+                </div>
+
+                <!-- CPF -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">CPF</label>
+                    <p id="modal-cpf" class="text-gray-900">Null</p>
+                </div>
+
+                <!-- Data Disponível -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Data Disponível</label>
+                    <p id="modal-data-disponivel" class="text-gray-900">Null</p>
+                </div>
+
+                <!-- Hora Disponível -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Hora Disponível</label>
+                    <p id="modal-hora-disponivel" class="text-gray-900">Null</p>
+                </div>
+
+                <!-- Status -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Status</label>
+                    <p id="modal-status" class="text-gray-900">Null</p>
+                </div>
+
+                <!-- Foto -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Foto</label>
+                    <p id="modal-foto" class="text-gray-900">Null</p>
+                </div>
+
+                <!-- Feedback do Cliente -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Feedback do Cliente</label>
+                    <p id="modal-feedback" class="text-gray-900">Null</p>
+                </div>
+            </div>
+        </div>
+        <div class="p-4 border-t flex justify-end">
+            <button onclick="closeModal()" class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Fechar</button>
+        </div>
+    </div>
+</div>
+
 <script>
+
+    // Função para abrir o modal com detalhes do atendimento
+
+    function openModal(data) {
+        // Preencher os campos do modal com os dados fornecidos
+        document.getElementById('modal-cliente').textContent = data.cliente || 'Null';
+        document.getElementById('modal-tecnico').textContent = data.tecnico || 'Null';
+        document.getElementById('modal-descricao').textContent = data.descricao || 'Null';
+        document.getElementById('modal-rua').textContent = data.rua || 'Null';
+        document.getElementById('modal-bairro').textContent = data.bairro || 'Null';
+        document.getElementById('modal-cep').textContent = data.cep || 'Null';
+        document.getElementById('modal-estado').textContent = data.estado || 'Null';
+        document.getElementById('modal-telefone').textContent = data.telefone || 'Null';
+        document.getElementById('modal-cpf').textContent = data.cpf || 'Null';
+        document.getElementById('modal-data-disponivel').textContent = data.data_disponivel || 'Null';
+        document.getElementById('modal-hora-disponivel').textContent = data.hora_disponivel || 'Null';
+        document.getElementById('modal-status').textContent = data.status || 'Null';
+        document.getElementById('modal-foto').textContent = data.foto ? 'Sim' : 'Null';
+        document.getElementById('modal-feedback').textContent = data.feedback_cliente || 'Null';
+
+        // Exibir o modal
+        document.getElementById('infoModal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+        // Esconder o modal
+        document.getElementById('infoModal').classList.add('hidden');
+    }
 
     // Selecionar todos os checkboxes
     document.getElementById('select-all').addEventListener('change', function () {

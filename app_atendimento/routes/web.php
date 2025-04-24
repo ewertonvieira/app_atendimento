@@ -96,7 +96,7 @@ Route::middleware(['auth', 'adminMiddleware'])->group(function () {
         Route::get('/create', [AtendimentosController::class, 'create'])->name('create'); // Formulário de criação
         Route::post('/', [AtendimentosController::class, 'store'])->name('store'); // Salvar novo atendimento
         Route::get('/{id}', [AtendimentosController::class, 'show'])->name('show'); // Exibir um atendimento
-        Route::get('/{id}/edit', [AtendimentosController::class, 'edit'])->name('edit'); // Formulário de edição
+        Route::get('/{id}/edit', [AtendimentosController::class, 'edit'])->name('edit');
         Route::put('/{id}', [AtendimentosController::class, 'update'])->name('update'); // Atualizar atendimento
         Route::delete('/', [AtendimentosController::class, 'destroy'])->name('destroy'); // Excluir um ou vários atendimentos
     });

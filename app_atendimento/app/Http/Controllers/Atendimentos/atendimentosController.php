@@ -61,16 +61,15 @@ class AtendimentosController extends Controller
     // Update an existing atendimento
     public function edit($id)
     {
-        $atendimento = Atendimentos::find($id);
+        $atendimento = Atendimentos::with('cliente', 'tecnico')->find($id);
 
         if (!$atendimento) {
             return redirect()->route('admin.atendimentos.index')->with('error', 'Atendimento não encontrado.');
         }
 
-        $clientes = User::where('usertype', 'cliente')->get();
         $tecnicos = User::where('usertype', 'tecnico')->get();
 
-        return view('admin.atendimentos.edit', compact('atendimento', 'clientes', 'tecnicos'));
+        return view('admin.atendimentos.edit', compact('atendimento', 'tecnicos'));
     }
 
     public function update(Request $request, $id)
@@ -81,25 +80,28 @@ class AtendimentosController extends Controller
             return redirect()->route('admin.atendimentos.index')->with('error', 'Atendimento não encontrado.');
         }
 
+        // Validação dos dados
         $validatedData = $request->validate([
-            'cliente_id' => 'required|exists:users,id',
-            'tecnico_id' => 'required|exists:users,id',
+            'tecnico_id' => 'nullable|exists:users,id', // Técnico deve existir na tabela de usuários
             'descricao' => 'nullable|string',
             'data_disponivel' => 'required|date',
             'hora_disponivel' => 'required',
-            'status' => 'required|string',
-            'data_agendada' => 'nullable|date',
-            'valor_comissao' => 'nullable|numeric',
             'foto' => 'nullable|image',
-            'prioridade' => 'nullable|string',
-            'feedback_cliente' => 'nullable|string',
-            'tempo_estimado' => 'nullable|string',
         ]);
 
+        // Atualizar o status para "agendado" se um técnico for selecionado
+        if ($request->filled('tecnico_id')) {
+            $validatedData['status'] = 'agendado';
+        } else {
+            $validatedData['status'] = 'pendente';
+        }
+
+        // Verificar se uma nova foto foi enviada
         if ($request->hasFile('foto')) {
             $validatedData['foto'] = $request->file('foto')->store('atendimentos', 'public');
         }
 
+        // Atualizar o atendimento no banco de dados
         $atendimento->update($validatedData);
 
         return redirect()->route('admin.atendimentos.index')->with('success', 'Atendimento atualizado com sucesso.');
