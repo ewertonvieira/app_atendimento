@@ -51,6 +51,7 @@ class AtendimentosUserController extends Controller
         $request->validate([
             'data_disponivel' => 'required|date',
             'hora_disponivel' => 'required',
+            'descricao' => 'required|string|max:255', // Adicionando validação para 'descricao'
             'foto' => 'nullable|image|max:2048',
         ]);
 
@@ -59,6 +60,7 @@ class AtendimentosUserController extends Controller
             'cliente_id' => $user->id,
             'data_disponivel' => $request->input('data_disponivel'),
             'hora_disponivel' => $request->input('hora_disponivel'),
+            'descricao' => $request->input('descricao'), // Adicionando 'descricao' ao array
             'foto' => $request->hasFile('foto') ? $request->file('foto')->store('atendimentos', 'public') : null,
         ]);
 

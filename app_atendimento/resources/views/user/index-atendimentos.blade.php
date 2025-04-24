@@ -16,7 +16,7 @@
                         @foreach ($atendimentos as $atendimento)
                             @if ($atendimento->cliente_id === Auth::id())
                                 <div class="bg-white shadow-lg rounded-lg p-4 border border-gray-200">
-                                    <h3 class="text-lg font-semibold text-gray-800">{{ $atendimento->descricao ?? 'Atendimento' }}</h3>
+                                    <h3 class="text-lg font-semibold text-gray-800 truncate" >{{ $atendimento->descricao ?? 'Atendimento' }}</h3>
                                     <p class="text-sm text-gray-600">Data: {{ $atendimento->data_disponivel }}</p>
                                     <p class="text-sm text-gray-600">Hora: {{ $atendimento->hora_disponivel }}</p>
                                     <p class="text-sm text-gray-600">Status: <span class="font-semibold">{{ ucfirst($atendimento->status) }}</span></p>
