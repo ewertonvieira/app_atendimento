@@ -270,15 +270,45 @@
 
     // Função para excluir os itens selecionados
     function deleteSelected() {
-        const selectedIds = Array.from(document.querySelectorAll('.select-item:checked'))
-            .map(checkbox => checkbox.value);
+    const selectedIds = Array.from(document.querySelectorAll('.select-item:checked'))
+        .map(checkbox => checkbox.value);
 
-        if (selectedIds.length === 0) {
-            alert('Nenhum atendimento selecionado para exclusão.');
-            return;
-        }
+    if (selectedIds.length === 0) {
+        alert('Nenhum atendimento selecionado para exclusão.');
+        return;
+    }
 
-        if (!confirm('Tem certeza que deseja excluir os atendimentos selecionados?')) {
+    if (!confirm('Tem certeza que deseja excluir os atendimentos selecionados?')) {
+        return;
+    }
+
+    // Enviar requisição para a rota de exclusão
+    fetch('{{ route('admin.atendimentos.destroy') }}', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ ids: selectedIds }) // Enviar os IDs como parte do corpo da requisição
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Atendimentos excluídos com sucesso.');
+                location.reload(); // Recarregar a página
+            } else {
+                alert('Erro ao excluir atendimentos.');
+            }
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            alert('Erro ao processar a solicitação.');
+        });
+}
+
+    // Função para excluir um único atendimento
+    function deleteSingle(id) {
+        if (!confirm('Tem certeza que deseja excluir este atendimento?')) {
             return;
         }
 
@@ -289,36 +319,7 @@
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
-            body: JSON.stringify({ ids: selectedIds })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Atendimentos excluídos com sucesso.');
-                    location.reload(); // Recarregar a página
-                } else {
-                    alert('Erro ao excluir atendimentos.');
-                }
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                alert('Erro ao processar a solicitação.');
-            });
-    }
-
-    // Função para excluir um único atendimento
-    function deleteSingle(id) {
-        if (!confirm('Tem certeza que deseja excluir este atendimento?')) {
-            return;
-        }
-
-        // Enviar requisição para a rota de exclusão
-        fetch(`{{ route('admin.atendimentos.destroy') }}/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
+            body: JSON.stringify({ ids: [id] }) // Enviar o ID como parte do corpo da requisição
         })
             .then(response => response.json())
             .then(data => {
@@ -333,6 +334,6 @@
                 console.error('Erro:', error);
                 alert('Erro ao processar a solicitação.');
             });
-    }
+        }
 </script>
 </x-app-layout>
