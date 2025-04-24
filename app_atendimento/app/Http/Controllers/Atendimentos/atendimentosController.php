@@ -16,7 +16,8 @@ class AtendimentosController extends Controller
         $clientes = User::where('usertype', 'user')->get(); // Carregar clientes
         $tecnicos = User::where('usertype', 'tecnico')->get(); // Carregar técnicos
 
-        return view('admin.atendimentos.index', compact('atendimentos', 'clientes', 'tecnicos'));
+        // Atualize o caminho da view para refletir o nome correto
+        return view('admin.atendimentos.index-atendimentos', compact('atendimentos', 'clientes', 'tecnicos'));
     }
 
     // Show a single atendimento
@@ -113,16 +114,19 @@ class AtendimentosController extends Controller
     }
 
     // Delete an atendimento
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        $atendimento = Atendimentos::find($id);
+        $ids = $request->input('ids'); // Recebe os IDs dos atendimentos a serem excluídos
 
-        if (!$atendimento) {
-            return redirect()->route('admin.atendimentos.index')->with('error', 'Atendimento não encontrado.');
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['success' => false, 'message' => 'Nenhum atendimento selecionado para exclusão.']);
         }
 
-        $atendimento->delete();
-
-        return redirect()->route('admin.atendimentos.index')->with('success', 'Atendimento excluído com sucesso.');
+        try {
+            Atendimentos::whereIn('id', $ids)->delete(); // Exclui os registros com os IDs fornecidos
+            return response()->json(['success' => true, 'message' => 'Atendimentos excluídos com sucesso.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Erro ao excluir atendimentos.']);
+        }
     }
 }
